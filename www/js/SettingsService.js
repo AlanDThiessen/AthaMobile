@@ -24,22 +24,40 @@
  *
  ******************************************************************************/
 
-(function() {
+
+(function () {
     'use strict';
 
-    angular.module('FeathersJS', ['Settings'])
-        .factory('FeathersJS', FeathersJSService);
+    angular.module('Settings', [])
+        .factory('Settings', Settings);
 
-    FeathersJSService.$inject = ['Settings'];
-    function FeathersJSService(settings) {
-        var url = settings.getValue('serverURL');
-        var socket = io(url);
-        var client = feathers()
-            .configure(feathers.hooks())
-            .configure(feathers.socketio(socket));
+    Settings.$inject = ['$window'];
+    function Settings($window) {
+        var service = {
+            getValue: getValue,
+            setValue: setValue
+        };
 
-        return client;
+        var storage = $window.localStorage;
+
+        return service;
+
+        ////////////////
+
+        function getValue(key) {
+            var obj;
+            var item = storage.getItem(key);
+
+            if(item) {
+                obj = JSON.parse(item);
+            }
+
+            return obj;
+        }
+
+        function setValue(key, value) {
+            storage.setItem(key, JSON.stringify(value));
+        }
     }
 
 })();
-

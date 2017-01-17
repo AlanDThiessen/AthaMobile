@@ -37,6 +37,17 @@ angular.module('starter', ['ionic', 'AthaMobile'])
 
             // Each tab has its own nav history stack:
 
+            .state('tab.settings', {
+                url: '/settings',
+                views: {
+                    'tab-settings': {
+                        templateUrl: 'templates/tab-settings.html',
+                        controller: 'SettingsCtrl',
+                        controllerAs: 'Settings'
+                    }
+                }
+            })
+
             .state('tab.rooms', {
                 url: '/rooms',
                 views: {

@@ -27,19 +27,19 @@
 (function() {
     'use strict';
 
-    angular.module('FeathersJS', ['Settings'])
-        .factory('FeathersJS', FeathersJSService);
+    angular.module('Settings')
+        .controller('SettingsCtrl', SettingsController);
 
-    FeathersJSService.$inject = ['Settings'];
-    function FeathersJSService(settings) {
-        var url = settings.getValue('serverURL');
-        var socket = io(url);
-        var client = feathers()
-            .configure(feathers.hooks())
-            .configure(feathers.socketio(socket));
 
-        return client;
+    SettingsController.$inject = ['Settings'];
+    function SettingsController(settings) {
+        var settingsCtrl = this;
+        settingsCtrl.url = settings.getValue('serverURL');
+        settingsCtrl.SaveServer = SaveServer;
+
+        function SaveServer() {
+            settings.setValue('serverURL', settingsCtrl.url);
+        }
     }
 
 })();
-

@@ -1,0 +1,10 @@
+<ion-view view-title="Settings">
+    <ion-content>
+        <ion-list>
+            <label class="item item-input">
+                <span class="input-label">Server</span>
+                <input type="text" ng-model="Settings.url" ng-model-options="{ debounce: 500 }" ng-change="Settings.SaveServer()">
+            </label>
+        </ion-list>
+    </ion-content>
+</ion-view>
