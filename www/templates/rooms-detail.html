@@ -1,9 +1,13 @@
-<ion-view view-title="{{room.name}}">
+<ion-view view-title="{{Lights.roomName}}">
   <ion-content class="padding">
       <ion-list>
-          <ion-item class="item-remove-animate item-icon-right" ng-repeat="light in Lights.lights" type="item-text-wrap">
-              <h2>{{light.name}}</h2>
-              <i class="icon ion-chevron-right icon-accessory"></i>
+          <ion-item class="item-remove-animate item" ng-repeat="(key, light) in Lights.lights" type="item-text-wrap">
+              <ion-toggle ng-model="light.status" toggle-class="toggle-calm" ng-change="Lights.lightChanged(light._id)">{{light.name}}</ion-toggle>
+              <div class="item range range-calm" ng-if="light.isDimmable">
+                  <i class="icon ion-ios-partlysunny-outline"></i>
+                  <input type="range" name="Brightness" min="0" max="100" ng-model="light.level" ng-model-options="{ debounce: 500 }" ng-change="Lights.lightChanged(light._id)">
+                  <i class="icon ion-ios-sunny-outline"></i>
+              </div>
           </ion-item>
       </ion-list>
   </ion-content>

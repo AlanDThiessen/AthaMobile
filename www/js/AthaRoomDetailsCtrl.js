@@ -32,20 +32,38 @@
 
 
 
-    RoomDetailsCtrl.$inject = ['$scope', '$stateParams', 'LightSvc'];
-    function RoomDetailsCtrl($scope, $stateParams, lightSvc) {
+    RoomDetailsCtrl.$inject = ['$scope', '$stateParams', 'RoomSvc', 'LightSvc'];
+    function RoomDetailsCtrl($scope, $stateParams, roomSvc, lightSvc) {
         var lightsCtrl = this;
-        lightsCtrl.lights = [];
+        lightsCtrl.roomName = "";
+        lightsCtrl.lights = {};
         lightsCtrl.removeLight = RemoveLight;
-        var rooms = {};
+        lightsCtrl.lightChanged = SendLightChange;
         var roomId = $stateParams.roomId;
 
-        UpdateLights();
+        $scope.$on('$destroy', Unsubscribe);
+        InitCtrl();
 
         return lightsCtrl;
 
 
-        function UpdateLights() {
+        function InitCtrl() {
+            lightSvc.on('created', OnLightCreated);
+            lightSvc.on('updated', OnLightUpdated);
+            lightSvc.on('removed', OnLightRemoved);
+            FindLightsByRoomId();
+            roomSvc.get(roomId).then(RoomRetrieved, OnError);
+        }
+
+
+        function Unsubscribe() {
+            lightSvc.removeListener('created', OnLightCreated);
+            lightSvc.removeListener('updated', OnLightUpdated);
+            lightSvc.removeListener('removed', OnLightRemoved);
+        }
+
+
+        function FindLightsByRoomId() {
             lightSvc.find({
                 query: {
                     $limit: 100,
@@ -58,20 +76,58 @@
         }
 
 
+        function RoomRetrieved(room) {
+            lightsCtrl.roomName = room.name;
+        }
+
+
         function OnLightsUpdate(data) {
-            lightsCtrl.lights = [];
+            lightsCtrl.lights = {};
 
             data.data.forEach(function(light) {
-                light.roomName = rooms[light.roomId];
-                lightsCtrl.lights.push(light);
+                lightsCtrl.lights[light._id] = light;
             });
 
             $scope.$apply();
         }
 
 
+        function OnLightCreated(light) {
+            if(light.roomId == roomId) {
+                lightsCtrl.lights[light._id] = light;
+                $scope.$apply();
+            }
+        }
+
+
+        function OnLightUpdated(light) {
+            if(lightsCtrl.lights.hasOwnProperty(light._id)) {
+                lightsCtrl.lights[light._id].status = light.status;
+                lightsCtrl.lights[light._id].level = light.level;
+                $scope.$apply();
+            }
+        }
+
+
+        function OnLightRemoved(light) {
+            if(lightsCtrl.lights.hasOwnProperty(light._id)) {
+                delete(lightsCtrl.lights[light._id]);
+                $scope.$apply();
+            }
+
+        }
+
+
         function RemoveLight(id) {
-            lightSvc.remove(id).then(UpdateLights, OnError);
+            lightSvc.remove(id).then(null, OnError);
+        }
+
+
+        function SendLightChange(id) {
+            var light = {};
+            angular.copy(lightsCtrl.lights[id], light);
+            delete(light._id);
+            lightSvc.update(id, light).then(null, OnError);
         }
 
 
