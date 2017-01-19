@@ -27,18 +27,35 @@
 (function() {
     'use strict';
 
-    angular.module('FeathersJS', ['Settings'])
+    angular.module('FeathersJS', [])
         .factory('FeathersJS', FeathersJSService);
 
-    FeathersJSService.$inject = ['Settings'];
-    function FeathersJSService(settings) {
-        var url = settings.getValue('serverURL');
-        var socket = io(url);
-        var client = feathers()
-            .configure(feathers.hooks())
-            .configure(feathers.socketio(socket));
+    FeathersJSService.$inject = [];
+    function FeathersJSService() {
+        var feathersSvc = {
+            client: undefined,
+            connect: ServerConnect
+        };
 
-        return client;
+        return feathersSvc;
+
+
+        function ServerConnect(serverURL) {
+            var socket = io(serverURL);
+            var client = feathers()
+                .configure(feathers.hooks())
+                .configure(feathers.socketio(socket))
+                .configure(feathers.authentication({storage: window.localStorage}));
+
+            feathersSvc.client = client;
+
+            socket.io.engine.on('upgrade', function(transport) {
+                console.log('transport changed');
+                client.authenticate();
+            });
+
+            return client;
+        }
     }
 
 })();

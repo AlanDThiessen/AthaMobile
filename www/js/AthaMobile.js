@@ -27,19 +27,19 @@
 (function() {
     'use strict';
 
-    angular.module("AthaMobile", ['FeathersJS'])
+    angular.module("AthaMobile", ['Settings', 'FeathersJS'])
         .factory('RoomSvc', RoomsService)
         .factory('LightSvc', LightSvc);
 
     RoomsService.$inject = ['FeathersJS'];
     function RoomsService(feathers) {
-        return feathers.service('rooms');
+        return feathers.client.service('rooms');
     }
 
 
     LightSvc.$inject = ['FeathersJS'];
     function LightSvc(feathers) {
-        return feathers.service('lights');
+        return feathers.client.service('lights');
     }
 
 })();
