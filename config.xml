@@ -5,7 +5,7 @@
       A mobile client for the Atha home automation project.
     </description>
   <author email="AlanDThiessen@gmail.com" href="http://www.intuitiveengineer.com/">
-      Your Name Here
+      Alan Thiessen
     </author>
   <content src="index.html"/>
   <access origin="*"/>
