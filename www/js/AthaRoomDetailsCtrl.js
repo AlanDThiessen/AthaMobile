@@ -32,8 +32,8 @@
 
 
 
-    RoomDetailsCtrl.$inject = ['$scope', '$stateParams', 'RoomSvc', 'LightSvc'];
-    function RoomDetailsCtrl($scope, $stateParams, roomSvc, lightSvc) {
+    RoomDetailsCtrl.$inject = ['$scope', '$state', '$stateParams', 'RoomSvc', 'LightSvc'];
+    function RoomDetailsCtrl($scope, $state, $stateParams, roomSvc, lightSvc) {
         var lightsCtrl = this;
         lightsCtrl.roomName = "";
         lightsCtrl.lights = {};
@@ -133,6 +133,7 @@
 
         function OnError(err) {
             console.log(err);
+            $state.go('login');
         }
     }
 

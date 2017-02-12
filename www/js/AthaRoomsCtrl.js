@@ -31,9 +31,9 @@
         .controller('RoomsCtrl', RoomsCtrl);
 
 
-    RoomsCtrl.$inject = ['$scope', 'RoomSvc'];
+    RoomsCtrl.$inject = ['$scope', '$state', 'RoomSvc'];
 
-    function RoomsCtrl($scope, roomSvc) {
+    function RoomsCtrl($scope, $state, roomSvc) {
         var roomsCtrl = this;
         roomsCtrl.rooms = [];
 
@@ -57,6 +57,7 @@
 
         function OnError(err) {
             console.log(err);
+            $state.go('login');
         }
     }
 

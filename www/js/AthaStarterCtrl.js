@@ -41,7 +41,7 @@
         startCtrl.password = '';
         startCtrl.login = DoLogin;
 
-        var client;
+        document.addEventListener('resume', ServerConnect);
 
         Start();
 
@@ -52,7 +52,6 @@
             startCtrl.url = settings.getValue('server');
 
             if(typeof(startCtrl.url) != 'undefined') {
-                client = feathers.connect(startCtrl.url);
                 ServerConnect();
             }
             else {
@@ -61,12 +60,21 @@
         }
 
 
+        function SetClient() {
+            if(typeof(feathers.client) == 'undefined') {
+                feathers.client = feathers.connect(startCtrl.url, ConnectionSuccess, ConnectionFailed);
+            }
+        }
+
+
         function ServerConnect(email, password) {
+            SetClient();
+
             if(typeof(email) == 'undefined') {
-                client.authenticate().then(ConnectionSuccess, ConnectionFailed);
+                feathers.client.authenticate().then(ConnectionSuccess, ConnectionFailed);
             }
             else {
-                client.authenticate({
+                feathers.client.authenticate({
                     'type': 'local',
                     'email': email,
                     'password': password
@@ -77,7 +85,7 @@
 
         function ConnectionSuccess() {
             settings.setValue('server', startCtrl.url);
-            settings.setValue('authToken', client.get('token'));
+            settings.setValue('authToken', feathers.client.get('token'));
             $state.go('tab.rooms');
         }
 
@@ -88,7 +96,6 @@
 
 
         function DoLogin() {
-            client = feathers.connect(startCtrl.url);
             ServerConnect(startCtrl.email, startCtrl.password);
         }
     }

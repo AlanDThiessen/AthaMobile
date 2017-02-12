@@ -40,7 +40,7 @@
         return feathersSvc;
 
 
-        function ServerConnect(serverURL) {
+        function ServerConnect(serverURL, success, failure) {
             var socket = io(serverURL);
             var client = feathers()
                 .configure(feathers.hooks())
@@ -51,7 +51,7 @@
 
             socket.io.engine.on('upgrade', function(transport) {
                 console.log('transport changed');
-                client.authenticate();
+                client.authenticate().then(success, failure);
             });
 
             return client;
